@@ -22,13 +22,14 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) {
         ImageRenderer renderer = new ImageRenderer();
-        Sidebar sidebar = new Sidebar();
+        Sidebar sidebar = new Sidebar(renderer);
+
         SelectionManager selectionManager = new SelectionManager();
-        selectionManager.setPrefHeight(80);
+        selectionManager.setPrefHeight(50);
 
         VBox imagePane = new VBox();
         imagePane.getChildren().addAll(renderer, selectionManager);
-        imagePane.setFillWidth(true);
+
         VBox.setVgrow(renderer, Priority.ALWAYS);
         VBox.setVgrow(selectionManager, Priority.NEVER);
         imagePane.setBackground(new Background(new BackgroundFill(
@@ -47,8 +48,8 @@ public class HelloApplication extends Application {
         Scene scene = new Scene(main);
         stage.setTitle("Hello!");
         stage.setScene(scene);
-        stage.setMaximized(true);
         stage.show();
+        stage.setMaximized(true);
     }
 
     public static void main(String[] args) {

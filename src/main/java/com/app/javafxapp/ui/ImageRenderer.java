@@ -25,7 +25,7 @@ public class ImageRenderer extends Pane {
 
     public ImageRenderer() {
         this.imageView = new ImageView();
-        imageView.setPreserveRatio(false);
+
         HBox hbox = new HBox();
         Button left = new Button("<");
         Button right = new Button(">");
@@ -41,16 +41,17 @@ public class ImageRenderer extends Pane {
         HBox.setHgrow(imageView, Priority.ALWAYS);
         HBox.setHgrow(left, Priority.NEVER);
         HBox.setHgrow(right, Priority.NEVER);
+        imageView.setPreserveRatio(true);
 
         getChildren().add(hbox);
         hbox.prefHeightProperty().bind(heightProperty());
         hbox.prefWidthProperty().bind(widthProperty());
 
-        load("");
+        //load("");
     }
 
-    public void load(String path) {
-        Image image = new Image("https://fastly.picsum.photos/id/870/536/354.jpg?blur=2&grayscale&hmac=A5T7lnprlMMlQ18KQcVMi3b7Bwa1Qq5YJFp8LSudZ84");
+    public void load(String url) {
+        Image image = new Image(url);
         imageView.setImage(image);
     }
 }

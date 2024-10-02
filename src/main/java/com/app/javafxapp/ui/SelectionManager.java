@@ -24,7 +24,7 @@ public class SelectionManager  extends Pane {
 
         hbox.getChildren().addAll(yes, mayBe, no);
         hbox.setSpacing(10);
-        hbox.setAlignment(Pos.CENTER);
+        hbox.setAlignment(Pos.BASELINE_CENTER);
         hbox.prefWidthProperty().bind(widthProperty());
 
         getChildren().add(hbox);
