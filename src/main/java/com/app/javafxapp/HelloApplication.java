@@ -7,6 +7,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -43,6 +44,8 @@ public class HelloApplication extends Application {
         HBox.setHgrow(sidebar, Priority.NEVER);
         HBox.setHgrow(imagePane, Priority.ALWAYS);
 
+
+
         FXMLLoader fxmlLoader =
             new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
         Scene scene = new Scene(main);
@@ -50,6 +53,9 @@ public class HelloApplication extends Application {
         stage.setScene(scene);
         stage.show();
         stage.setMaximized(true);
+
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, sidebar::move);
+
     }
 
     public static void main(String[] args) {

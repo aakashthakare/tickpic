@@ -7,14 +7,20 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.event.EventType;
+import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 public class Sidebar  extends ScrollPane {
     private final ImageRenderer renderer;
@@ -31,10 +37,12 @@ public class Sidebar  extends ScrollPane {
 
     private List<Image> images;
 
+    private List<Pane> imageViews;
+
     public Sidebar(ImageRenderer renderer) {
         this.renderer = renderer;
         images = new ArrayList<>();
-        List<ImageView> imageViews = new ArrayList<>();
+        imageViews = new ArrayList<>();
 
         URL url = this.getClass().getClassLoader().getResource("images");
         File directory = null;
@@ -51,38 +59,59 @@ public class Sidebar  extends ScrollPane {
             try {
                 Image image = new Image(file.toURI().toURL().toString(), 100, 100, false, false);
                 ImageView imageView = new ImageView(image);
-                imageViews.add(imageView);
                 imageView.setUserData(i);
                 imageView.setOnMouseClicked(e -> {
                     imageView.requestFocus();
                     renderer.load(image.getUrl());
                 });
-                if(i == 0) {
-                    imageView.requestFocus();
-                    renderer.load(image.getUrl());
-                    selected = i;
-                }
+                Pane imagePane = new Pane();
+                imagePane.getChildren().add(imageView);
+                imagePane.setPadding(new Insets(3));
+                imagePane.setBackground(new Background(new BackgroundFill(
+                    Color.GRAY,
+                    CornerRadii.EMPTY,
+                    Insets.EMPTY
+                )));
                 images.add(image);
+                imageViews.add(imagePane);
+                if(i == 0) {
+                    selected = i;
+                    selectImage();
+                }
                 i++;
             } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
             }
         }
         VBox box = new VBox();
-        box.setSpacing(10.0);
+        box.setPadding(new Insets(5));
+        box.setSpacing(5);
         box.getChildren().addAll(imageViews);
-        box.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
-            if(KeyCode.LEFT == e.getCode() && selected > 0) {
-                selected--;
-            }
-
-            if(KeyCode.RIGHT == e.getCode() && selected < total - 1) {
-                selected++;
-            }
-
-            renderer.load(images.get(selected).getUrl());
-        });
-
         setContent(box);
+    }
+
+    public void move(KeyEvent e) {
+        imageViews.get(selected).setBackground(new Background(new BackgroundFill(
+            Color.GRAY,
+            CornerRadii.EMPTY,
+            Insets.EMPTY
+        )));
+        if(KeyCode.LEFT == e.getCode() && selected > 0) {
+            selected--;
+        }
+
+        if(KeyCode.RIGHT == e.getCode() && selected < total - 1) {
+            selected++;
+        }
+        selectImage();
+    }
+
+    private void selectImage() {
+        renderer.load(images.get(selected).getUrl());
+        imageViews.get(selected).setBackground(new Background(new BackgroundFill(
+            Color.LIGHTGREEN,
+            CornerRadii.EMPTY,
+            Insets.EMPTY
+        )));
     }
 }
