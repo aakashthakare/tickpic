@@ -60,13 +60,10 @@ public class Sidebar  extends ScrollPane {
                 Image image = new Image(file.toURI().toURL().toString(), 100, 100, false, false);
                 ImageView imageView = new ImageView(image);
                 imageView.setUserData(i);
-                imageView.setOnMouseClicked(e -> {
-                    imageView.requestFocus();
-                    renderer.load(image.getUrl());
-                });
+
                 Pane imagePane = new Pane();
                 imagePane.getChildren().add(imageView);
-                imagePane.setPadding(new Insets(3));
+                imagePane.setPadding(new Insets(1));
                 imagePane.setBackground(new Background(new BackgroundFill(
                     Color.GRAY,
                     CornerRadii.EMPTY,
@@ -74,10 +71,17 @@ public class Sidebar  extends ScrollPane {
                 )));
                 images.add(image);
                 imageViews.add(imagePane);
+
                 if(i == 0) {
                     selected = i;
                     selectImage();
                 }
+
+                imageView.setOnMouseClicked(e -> {
+                    deselectImage();
+                    selected = (Integer) imageView.getUserData();
+                    selectImage();
+                });
                 i++;
             } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
@@ -91,11 +95,7 @@ public class Sidebar  extends ScrollPane {
     }
 
     public void move(KeyEvent e) {
-        imageViews.get(selected).setBackground(new Background(new BackgroundFill(
-            Color.GRAY,
-            CornerRadii.EMPTY,
-            Insets.EMPTY
-        )));
+        deselectImage();
         if(KeyCode.LEFT == e.getCode() && selected > 0) {
             selected--;
         }
@@ -104,6 +104,14 @@ public class Sidebar  extends ScrollPane {
             selected++;
         }
         selectImage();
+    }
+
+    private void deselectImage() {
+        imageViews.get(selected).setBackground(new Background(new BackgroundFill(
+            Color.GRAY,
+            CornerRadii.EMPTY,
+            Insets.EMPTY
+        )));
     }
 
     private void selectImage() {
