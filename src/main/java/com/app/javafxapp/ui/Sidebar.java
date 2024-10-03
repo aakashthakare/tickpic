@@ -31,7 +31,7 @@ public class Sidebar  extends ScrollPane {
     // background color change as per selection
     // scroll
 
-    private int selected;
+    public int selected;
 
     private int total;
 
@@ -95,18 +95,16 @@ public class Sidebar  extends ScrollPane {
     }
 
     public void move(KeyEvent e) {
-        deselectImage();
-        if(KeyCode.LEFT == e.getCode() && selected > 0) {
-            selected--;
+        if(KeyCode.LEFT == e.getCode()) {
+            leftArrowClicked();
         }
 
-        if(KeyCode.RIGHT == e.getCode() && selected < total - 1) {
-            selected++;
+        if(KeyCode.RIGHT == e.getCode()) {
+            rightArrowClicked();
         }
-        selectImage();
     }
 
-    private void deselectImage() {
+    public void deselectImage() {
         imageViews.get(selected).setBackground(new Background(new BackgroundFill(
             Color.GRAY,
             CornerRadii.EMPTY,
@@ -114,12 +112,28 @@ public class Sidebar  extends ScrollPane {
         )));
     }
 
-    private void selectImage() {
+    public void selectImage() {
         renderer.load(images.get(selected).getUrl());
         imageViews.get(selected).setBackground(new Background(new BackgroundFill(
             Color.LIGHTGREEN,
             CornerRadii.EMPTY,
             Insets.EMPTY
         )));
+    }
+
+    public void leftArrowClicked() {
+        if(selected > 0) {
+            deselectImage();
+            selected--;
+            selectImage();
+        }
+    }
+
+    public void rightArrowClicked() {
+        if(selected < total - 1) {
+            deselectImage();
+            selected++;
+            selectImage();
+        }
     }
 }

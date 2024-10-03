@@ -24,6 +24,7 @@ public class HelloApplication extends Application {
     public void start(Stage stage) {
         ImageRenderer renderer = new ImageRenderer();
         Sidebar sidebar = new Sidebar(renderer);
+        renderer.setSidebar(sidebar);
 
         SelectionManager selectionManager = new SelectionManager();
         selectionManager.setPrefHeight(50);
