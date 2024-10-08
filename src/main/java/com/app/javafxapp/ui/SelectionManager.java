@@ -16,13 +16,15 @@ public class SelectionManager  extends Pane {
     // keyboard shortcuts (Yes - Y, No - N, S - Skip)
     // highligh current selection if image render again
 
-    public SelectionManager() {
+    public SelectionManager(Sidebar sidebar) {
         HBox hbox = new HBox();
         Button yes = new Button("Yes");
-        Button mayBe = new Button("Skip");
         Button no = new Button("No");
 
-        hbox.getChildren().addAll(yes, mayBe, no);
+        yes.setOnAction(e -> sidebar.update("Y"));
+        no.setOnAction(e -> sidebar.update("N"));
+
+        hbox.getChildren().addAll(yes, no);
         hbox.setSpacing(10);
         hbox.setAlignment(Pos.BASELINE_CENTER);
         hbox.prefWidthProperty().bind(widthProperty());

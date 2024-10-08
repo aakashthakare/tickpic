@@ -9,6 +9,9 @@ import java.util.List;
 import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Side;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
@@ -21,6 +24,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
 public class Sidebar  extends ScrollPane {
     private final ImageRenderer renderer;
@@ -37,12 +41,15 @@ public class Sidebar  extends ScrollPane {
 
     private List<Image> images;
 
+    private List<Button> labels;
+
     private List<Pane> imageViews;
 
     public Sidebar(ImageRenderer renderer) {
         this.renderer = renderer;
         images = new ArrayList<>();
         imageViews = new ArrayList<>();
+        labels = new ArrayList<>();
 
         URL url = this.getClass().getClassLoader().getResource("images");
         File directory = null;
@@ -61,8 +68,13 @@ public class Sidebar  extends ScrollPane {
                 ImageView imageView = new ImageView(image);
                 imageView.setUserData(i);
 
+                Button label = new Button();
+
                 Pane imagePane = new Pane();
                 imagePane.getChildren().add(imageView);
+                imagePane.getChildren().add(label);
+                label.toFront();
+                labels.add(label);
                 imagePane.setPadding(new Insets(1));
                 imagePane.setBackground(new Background(new BackgroundFill(
                     Color.GRAY,
@@ -135,5 +147,16 @@ public class Sidebar  extends ScrollPane {
             selected++;
             selectImage();
         }
+    }
+
+    public void update(String s) {
+        Button label = labels.get(selected);
+        label.setText(s);
+        label.setBackground(new Background(new BackgroundFill(
+            s.equals("Y") ? Color.LIGHTGREEN : Color.RED,
+            CornerRadii.EMPTY,
+            Insets.EMPTY
+        )));
+        rightArrowClicked();
     }
 }

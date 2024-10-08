@@ -26,7 +26,7 @@ public class HelloApplication extends Application {
         Sidebar sidebar = new Sidebar(renderer);
         renderer.setSidebar(sidebar);
 
-        SelectionManager selectionManager = new SelectionManager();
+        SelectionManager selectionManager = new SelectionManager(sidebar);
         selectionManager.setPrefHeight(50);
 
         VBox imagePane = new VBox();
@@ -35,7 +35,7 @@ public class HelloApplication extends Application {
         VBox.setVgrow(renderer, Priority.ALWAYS);
         VBox.setVgrow(selectionManager, Priority.NEVER);
         imagePane.setBackground(new Background(new BackgroundFill(
-            Color.RED,
+            Color.GRAY,
             CornerRadii.EMPTY,
             Insets.EMPTY
         )));
