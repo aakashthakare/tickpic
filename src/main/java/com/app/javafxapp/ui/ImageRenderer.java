@@ -2,6 +2,7 @@ package com.app.javafxapp.ui;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.geometry.Side;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -16,7 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
-public class ImageRenderer extends Pane {
+public class ImageRenderer extends HBox {
     private Sidebar sidebar;
 
     public void setSidebar(Sidebar sidebar) {
@@ -31,30 +32,29 @@ public class ImageRenderer extends Pane {
 
     public ImageRenderer() {
         this.imageView = new ImageView();
-
-        HBox hbox = new HBox();
         Button left = new Button("<");
         Button right = new Button(">");
 
         left.setOnAction(e -> sidebar.leftArrowClicked());
         right.setOnAction(e -> sidebar.rightArrowClicked());
 
-        hbox.setAlignment(Pos.CENTER);
-        hbox.setBackground(new Background(new BackgroundFill(
+        setAlignment(Pos.CENTER);
+        setBackground(new Background(new BackgroundFill(
             Color.LIGHTBLUE,
             CornerRadii.EMPTY,
             Insets.EMPTY
         )));
-        hbox.getChildren().addAll(left, imageView, right);
+//
+        imageView.fitWidthProperty().bind(widthProperty().divide(0.1));
+        imageView.fitHeightProperty().bind(heightProperty().divide(0.1));
 
+        //hbox.
+        getChildren().addAll(left, imageView, right);
         HBox.setHgrow(imageView, Priority.ALWAYS);
         HBox.setHgrow(left, Priority.NEVER);
         HBox.setHgrow(right, Priority.NEVER);
-        imageView.setPreserveRatio(true);
-        imageView.setFitHeight(hbox.heightProperty().doubleValue());
-        imageView.setFitWidth(hbox.widthProperty().doubleValue());
 
-        getChildren().add(hbox);
+        //getChildren().add(hbox);
     }
 
     public void load(String url) {

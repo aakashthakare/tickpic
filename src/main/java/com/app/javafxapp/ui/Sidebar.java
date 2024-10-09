@@ -51,20 +51,14 @@ public class Sidebar  extends ScrollPane {
         imageViews = new ArrayList<>();
         labels = new ArrayList<>();
 
-        URL url = this.getClass().getClassLoader().getResource("images");
-        File directory = null;
-        try {
-            directory = new File(url.toURI());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+        File directory = new File("/Users/akash/Pictures/Screenshots");
         File[] files = directory.listFiles();
         total = files.length;
         int i = 0;
 
         for (File file : files) {
             try {
-                Image image = new Image(file.toURI().toURL().toString(), 100, 100, false, false);
+                Image image = new Image(file.toURI().toURL().toString(), 120, 100, false, false);
                 ImageView imageView = new ImageView(image);
                 imageView.setUserData(i);
 
