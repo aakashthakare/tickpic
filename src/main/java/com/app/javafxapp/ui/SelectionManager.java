@@ -12,29 +12,32 @@ import javafx.scene.paint.Color;
 
 public class SelectionManager  extends Pane {
 
-    // yes, no, maybe (not sure or skip)
-    // keyboard shortcuts (Yes - Y, No - N, S - Skip)
-    // highligh current selection if image render again
-
     public SelectionManager(Sidebar sidebar) {
         HBox hbox = new HBox();
         Button yes = new Button("Yes");
-        Button no = new Button("No");
-
-        yes.setOnAction(e -> sidebar.update("Y"));
-        no.setOnAction(e -> sidebar.update("N"));
-
-        hbox.getChildren().addAll(yes, no);
-        hbox.setSpacing(10);
-        hbox.setAlignment(Pos.BASELINE_CENTER);
-        hbox.prefWidthProperty().bind(widthProperty());
-
-        getChildren().add(hbox);
-
-        setBackground(new Background(new BackgroundFill(
-            Color.TEAL,
+        yes.setStyle("-fx-font-size:30");
+        yes.setBackground(new Background(new BackgroundFill(
+            Color.GREEN,
             CornerRadii.EMPTY,
             Insets.EMPTY
         )));
+
+        Button no = new Button("No");
+        no.setStyle("-fx-font-size:30");
+        no.setBackground(new Background(new BackgroundFill(
+            Color.RED,
+            CornerRadii.EMPTY,
+            Insets.EMPTY
+        )));
+
+        yes.setOnAction(e -> sidebar.setSelected(true));
+        no.setOnAction(e -> sidebar.setSelected(false));
+
+        hbox.getChildren().addAll(yes, no);
+        hbox.setSpacing(10);
+        hbox.setAlignment(Pos.BOTTOM_CENTER);
+        hbox.prefWidthProperty().bind(widthProperty());
+
+        getChildren().add(hbox);
     }
 }

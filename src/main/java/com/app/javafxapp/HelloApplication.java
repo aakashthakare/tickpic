@@ -17,8 +17,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-
 public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) {
@@ -27,7 +25,7 @@ public class HelloApplication extends Application {
         renderer.setSidebar(sidebar);
 
         SelectionManager selectionManager = new SelectionManager(sidebar);
-        selectionManager.setPrefHeight(50);
+        selectionManager.setPrefHeight(100);
 
         VBox imagePane = new VBox();
         imagePane.getChildren().addAll(renderer, selectionManager);
@@ -45,8 +43,6 @@ public class HelloApplication extends Application {
         HBox.setHgrow(sidebar, Priority.NEVER);
         HBox.setHgrow(imagePane, Priority.ALWAYS);
 
-
-
         FXMLLoader fxmlLoader =
             new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
         Scene scene = new Scene(main);
@@ -56,7 +52,6 @@ public class HelloApplication extends Application {
         stage.setMaximized(true);
 
         scene.addEventFilter(KeyEvent.KEY_PRESSED, sidebar::move);
-
     }
 
     public static void main(String[] args) {
