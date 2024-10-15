@@ -1,11 +1,14 @@
 package com.app.javafxapp.ui;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -39,22 +42,35 @@ public class Sidebar  extends ScrollPane {
         imageViews = new ArrayList<>();
         selectionLabels = new ArrayList<>();
         box = new VBox();
-        box.setPadding(new Insets(5));
-        box.setSpacing(5);
         setContent(box);
-        loadImages();
     }
 
-    private void loadImages() {
+    void loadImages(String path) {
         new Thread(() -> {
-            File directory = new File("/Users/akash/Pictures/Screenshots");
-            File[] files = directory.listFiles();
-            total = files.length;
+            File directory = new File(path);
+            List<File> files = new ArrayList<>();
+            if(!directory.exists()) {
+                showAlert();
+                return;
+            } else {
+                File[] filesArr = directory.listFiles();
+                if (filesArr == null) {
+                    showAlert();
+                    return;
+                } else {
+                    for (File file : filesArr) {
+                        files.add(file);
+                    }
+                }
+            }
 
             Platform.runLater(() -> {
                 int i = 0;
                 for (File file : files) {
                     try {
+                        String mime = Files.probeContentType(file.toPath());
+                        if(mime != null && !mime.startsWith("image")) continue;
+                        total++;
                         Image image = new Image(file.toURI().toURL().toString(), 100, 100, false, false);
                         ImageView imageView = new ImageView(image);
                         imageView.setUserData(i);
@@ -83,11 +99,21 @@ public class Sidebar  extends ScrollPane {
                         box.getChildren().add(imagePane);
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
                 }
                 updateFocus(true);
             });
         }).start();
+    }
+
+    private static void showAlert() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Alert");
+        alert.setHeaderText("Failed to load files.");
+        alert.setContentText("Please check the folder path and ensure it's valid.");
+        alert.showAndWait();
     }
 
     public void move(KeyEvent e) {

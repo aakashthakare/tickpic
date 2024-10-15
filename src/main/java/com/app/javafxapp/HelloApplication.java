@@ -1,5 +1,6 @@
 package com.app.javafxapp;
 
+import com.app.javafxapp.ui.FolderSelection;
 import com.app.javafxapp.ui.ImageRenderer;
 import com.app.javafxapp.ui.SelectionManager;
 import com.app.javafxapp.ui.Sidebar;
@@ -24,6 +25,8 @@ public class HelloApplication extends Application {
         Sidebar sidebar = new Sidebar(renderer);
         renderer.setSidebar(sidebar);
 
+        FolderSelection folderSelection = new FolderSelection(sidebar);
+
         SelectionManager selectionManager = new SelectionManager(sidebar);
         selectionManager.setPrefHeight(100);
 
@@ -43,9 +46,12 @@ public class HelloApplication extends Application {
         HBox.setHgrow(sidebar, Priority.NEVER);
         HBox.setHgrow(imagePane, Priority.ALWAYS);
 
+        VBox mainV = new VBox();
+        mainV.getChildren().addAll(folderSelection, main);
+
         FXMLLoader fxmlLoader =
             new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
-        Scene scene = new Scene(main);
+        Scene scene = new Scene(mainV);
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
