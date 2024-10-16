@@ -17,6 +17,7 @@ public class FileCopy {
                 Files.copy(Paths.get(from, s.getFile()), Path.of(to, s.getFile()));
                 count++;
             } catch (IOException e) {
+                System.out.println("Failed to copy : " + s.getFile());
                 e.printStackTrace();
             }
         }

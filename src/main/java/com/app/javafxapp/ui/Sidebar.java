@@ -5,9 +5,6 @@ import com.app.javafxapp.db.Selection;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +12,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.scene.chart.PieChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -38,6 +33,8 @@ public class Sidebar  extends ScrollPane {
 
     private int total;
 
+    private List<String> filePaths;
+
     private List<Image> images;
 
     private List<Button> selectionLabels;
@@ -52,6 +49,7 @@ public class Sidebar  extends ScrollPane {
         images = new ArrayList<>();
         imageViews = new ArrayList<>();
         selectionLabels = new ArrayList<>();
+        filePaths = new ArrayList<>();
         box = new VBox();
         setContent(box);
         renderer.setVisible(false);
@@ -68,6 +66,7 @@ public class Sidebar  extends ScrollPane {
         images.clear();
         imageViews.clear();
         selectionLabels.clear();
+        filePaths.clear();
         total = selected = 0;
 
         new Thread(() -> {
@@ -106,6 +105,8 @@ public class Sidebar  extends ScrollPane {
                         imagePane.getChildren().add(label);
 
                         String fileName = getFileName(file.getAbsolutePath());
+                        filePaths.add(fileName);
+
                         if(fileSelectionMap.get(fileName) != null) {
                             updateSelectionLabel(label, fileSelectionMap.get(fileName));
                         } else {
@@ -193,7 +194,7 @@ public class Sidebar  extends ScrollPane {
             CornerRadii.EMPTY,
             Insets.EMPTY
         )));
-        DataManager.save(selectedDirectory, getFileName(images.get(selected).getUrl()), isSelected);
+        DataManager.save(selectedDirectory, getFileName(filePaths.get(selected)), isSelected);
         rightArrowClicked();
     }
 

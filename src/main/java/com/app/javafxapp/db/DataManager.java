@@ -1,15 +1,11 @@
 package com.app.javafxapp.db;
 
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 public class DataManager {
@@ -39,8 +35,8 @@ public class DataManager {
 
         try (Connection conn = SQLiteConnection.connect();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, URLEncoder.encode(folder, StandardCharsets.UTF_8));
-            pstmt.setString(2, URLEncoder.encode(file, StandardCharsets.UTF_8));
+            pstmt.setString(1, folder);
+            pstmt.setString(2, file);
             pstmt.setInt(3, isSelected ? 1 : 0);
             pstmt.setInt(4, isSelected ? 1 : 0);
             pstmt.executeUpdate();
@@ -55,14 +51,14 @@ public class DataManager {
 
         try (Connection conn = SQLiteConnection.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, URLEncoder.encode(folder));
+            pstmt.setString(1, folder);
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 Selection selection = new Selection();
                 selection.setId(rs.getInt("id"));
-                selection.setFolder(URLDecoder.decode(rs.getString("folder"), StandardCharsets.UTF_8));
-                selection.setFile(URLDecoder.decode(rs.getString("file"), StandardCharsets.UTF_8));
+                selection.setFolder(rs.getString("folder"));
+                selection.setFile(rs.getString("file"));
                 selection.setSelected(rs.getInt("isSelected") == 1);
                 fetch.add(selection);
             }
