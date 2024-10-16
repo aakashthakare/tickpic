@@ -1,5 +1,7 @@
 package com.app.javafxapp.ui;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -10,28 +12,18 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
-public class SelectionManager  extends Pane {
+public class SelectionManager extends Pane {
 
-    public SelectionManager(Sidebar sidebar) {
+    private final Button yes;
+    private final Button no;
+
+    public SelectionManager() {
         HBox hbox = new HBox();
-        Button yes = new Button("Yes");
+        yes = new Button("Yes");
         yes.setStyle("-fx-font-size:30");
-        yes.setBackground(new Background(new BackgroundFill(
-            Color.GREEN,
-            CornerRadii.EMPTY,
-            Insets.EMPTY
-        )));
 
-        Button no = new Button("No");
+        no = new Button("No");
         no.setStyle("-fx-font-size:30");
-        no.setBackground(new Background(new BackgroundFill(
-            Color.RED,
-            CornerRadii.EMPTY,
-            Insets.EMPTY
-        )));
-
-        yes.setOnAction(e -> sidebar.setSelected(true));
-        no.setOnAction(e -> sidebar.setSelected(false));
 
         hbox.getChildren().addAll(yes, no);
         hbox.setSpacing(10);
@@ -41,4 +33,14 @@ public class SelectionManager  extends Pane {
         getChildren().add(hbox);
         setVisible(false);
     }
+
+    public void addYesSelectionListener(EventHandler<ActionEvent> e) {
+        yes.setOnAction(e);
+    }
+
+    public void addNoSelectionListener(EventHandler<ActionEvent> e) {
+        no.setOnAction(e);
+    }
+
+
 }

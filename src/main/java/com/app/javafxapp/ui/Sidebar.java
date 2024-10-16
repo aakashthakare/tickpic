@@ -1,12 +1,13 @@
 package com.app.javafxapp.ui;
 
 import com.app.javafxapp.db.DataManager;
-import com.app.javafxapp.db.Selection;
+import com.app.javafxapp.domain.Selection;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,15 +45,24 @@ public class Sidebar  extends ScrollPane {
     private VBox box;
     private String selectedDirectory;
 
-    public Sidebar(ImageRenderer renderer) {
+    public Sidebar(ImageRenderer renderer, SelectionManager selectionManager) {
         this.renderer = renderer;
+        renderer.setVisible(false);
+        renderer.addRightArrowClickListener(e -> rightArrowClicked());
+        renderer.addLeftArrowClickListener(e -> leftArrowClicked());
+
+        this.selectionManager = selectionManager;
+        selectionManager.addNoSelectionListener(e -> setSelected(false));
+        selectionManager.addYesSelectionListener(e -> setSelected(true));
+
         images = new ArrayList<>();
         imageViews = new ArrayList<>();
         selectionLabels = new ArrayList<>();
         filePaths = new ArrayList<>();
         box = new VBox();
+        box.setSpacing(10);
+
         setContent(box);
-        renderer.setVisible(false);
         setVisible(false);
     }
 
@@ -60,30 +70,23 @@ public class Sidebar  extends ScrollPane {
         this.selectedDirectory = path;
         List<Selection> fetched = DataManager.fetch(selectedDirectory);
         Map<String, Boolean> fileSelectionMap =
-            fetched.stream().collect(Collectors.toMap(s -> s.getFile(), s -> s.getSelected()));
+            fetched.stream().collect(Collectors.toMap(Selection::getFile, Selection::getSelected));
 
-        box.getChildren().clear();
-        images.clear();
-        imageViews.clear();
-        selectionLabels.clear();
-        filePaths.clear();
-        total = selected = 0;
+        clear();
 
         new Thread(() -> {
-            File directory = new File(path);
+            File directory = new File(selectedDirectory);
             List<File> files = new ArrayList<>();
             if(!directory.exists()) {
-                showAlert();
+                Platform.runLater(this::showAlert);
                 return;
             } else {
                 File[] filesArr = directory.listFiles();
-                if (filesArr == null) {
-                    showAlert();
+                if (filesArr == null || filesArr.length == 0) {
+                    Platform.runLater(this::showAlert);
                     return;
                 } else {
-                    for (File file : filesArr) {
-                        files.add(file);
-                    }
+                    files.addAll(Arrays.asList(filesArr));
                 }
             }
 
@@ -99,7 +102,7 @@ public class Sidebar  extends ScrollPane {
                         imageView.setUserData(i);
                         imageView.setPreserveRatio(true);
 
-                        Button label = new Button("?");
+                        Button label = new Button();
                         Pane imagePane = new Pane();
                         imagePane.getChildren().add(imageView);
                         imagePane.getChildren().add(label);
@@ -111,7 +114,7 @@ public class Sidebar  extends ScrollPane {
                             updateSelectionLabel(label, fileSelectionMap.get(fileName));
                         } else {
                             label.setBackground(new Background(new BackgroundFill(
-                                Color.DARKGRAY,
+                                Color.TRANSPARENT,
                                 CornerRadii.EMPTY,
                                 Insets.EMPTY
                             )));
@@ -128,10 +131,8 @@ public class Sidebar  extends ScrollPane {
                         });
                         i++;
                         box.getChildren().add(imagePane);
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        e.printStackTrace();
                     }
                     this.setVisible(true);
                     renderer.setVisible(true);
@@ -142,11 +143,20 @@ public class Sidebar  extends ScrollPane {
         }).start();
     }
 
-    private static void showAlert() {
+    private void clear() {
+        box.getChildren().clear();
+        images.clear();
+        imageViews.clear();
+        selectionLabels.clear();
+        filePaths.clear();
+        total = selected = 0;
+    }
+
+    private void showAlert() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Alert");
         alert.setHeaderText("Failed to load files.");
-        alert.setContentText("Please check the folder path and ensure it's valid.");
+        alert.setContentText("Please check the folder path and ensure it's valid and contains one or more images in it.");
         alert.showAndWait();
     }
 
@@ -185,15 +195,8 @@ public class Sidebar  extends ScrollPane {
     }
 
     public void setSelected(boolean isSelected) {
-        String s = isSelected ? "Y" : "N";
         Button label = selectionLabels.get(selected);
-        label.setText(s);
-        label.toFront();
-        label.setBackground(new Background(new BackgroundFill(
-            isSelected ? Color.LIGHTGREEN : Color.RED,
-            CornerRadii.EMPTY,
-            Insets.EMPTY
-        )));
+        updateSelectionLabel(label, isSelected);
         DataManager.save(selectedDirectory, getFileName(filePaths.get(selected)), isSelected);
         rightArrowClicked();
     }
@@ -203,14 +206,10 @@ public class Sidebar  extends ScrollPane {
         label.setText(s);
         label.toFront();
         label.setBackground(new Background(new BackgroundFill(
-            isSelected ? Color.LIGHTGREEN : Color.RED,
-            CornerRadii.EMPTY,
+            isSelected ? Color.rgb(168, 213, 186) : Color.rgb(242, 139, 130),
+            new CornerRadii(25),
             Insets.EMPTY
         )));
-    }
-
-    public void setSelectionManager(SelectionManager selectionManager) {
-        this.selectionManager = selectionManager;
     }
 
     private static String getFileName(String url) {

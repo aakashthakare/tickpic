@@ -1,14 +1,15 @@
 package com.app.javafxapp.file;
 
 import com.app.javafxapp.db.DataManager;
-import com.app.javafxapp.db.Selection;
+import com.app.javafxapp.domain.Selection;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class FileCopy {
+public final class FileCopy {
+    private FileCopy(){}
     public static int copySelected(String from, String to) {
         List<Selection> fetched = DataManager.fetch(from);
         int count = 0;
@@ -17,7 +18,6 @@ public class FileCopy {
                 Files.copy(Paths.get(from, s.getFile()), Path.of(to, s.getFile()));
                 count++;
             } catch (IOException e) {
-                System.out.println("Failed to copy : " + s.getFile());
                 e.printStackTrace();
             }
         }

@@ -1,5 +1,7 @@
 package com.app.javafxapp.ui;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -13,35 +15,18 @@ import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 
 public class ImageRenderer extends HBox {
-
-    private Sidebar sidebar;
-
     private ImageView imageView;
-
-    public void setSidebar(Sidebar sidebar) {
-        this.sidebar = sidebar;
-    }
-
+    private final Button left;
+    private final Button right;
     public ImageRenderer() {
         this.imageView = new ImageView();
-        Button left = new Button("<");
+        left = new Button("<");
         left.setStyle("-fx-font-size:25");
-        left.setBackground(new Background(new BackgroundFill(
-            Color.DARKGRAY,
-            CornerRadii.EMPTY,
-            Insets.EMPTY
-        )));
 
-        Button right = new Button(">");
+
+
+        right = new Button(">");
         right.setStyle("-fx-font-size:25");
-        right.setBackground(new Background(new BackgroundFill(
-            Color.DARKGRAY,
-            CornerRadii.EMPTY,
-            Insets.EMPTY
-        )));
-
-        left.setOnAction(e -> sidebar.leftArrowClicked());
-        right.setOnAction(e -> sidebar.rightArrowClicked());
 
         setAlignment(Pos.CENTER);
         imageView.fitWidthProperty().bind(widthProperty().divide(1.20));
@@ -58,5 +43,13 @@ public class ImageRenderer extends HBox {
     public void load(String url) {
         Image image = new Image(url);
         imageView.setImage(image);
+    }
+
+    public void addLeftArrowClickListener(EventHandler<ActionEvent> e) {
+        left.setOnAction(e);
+    }
+
+    public void addRightArrowClickListener(EventHandler<ActionEvent> e) {
+        right.setOnAction(e);
     }
 }

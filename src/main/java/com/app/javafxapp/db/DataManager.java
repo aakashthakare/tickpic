@@ -1,5 +1,6 @@
 package com.app.javafxapp.db;
 
+import com.app.javafxapp.domain.Selection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

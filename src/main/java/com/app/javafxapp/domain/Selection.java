@@ -1,4 +1,4 @@
-package com.app.javafxapp.db;
+package com.app.javafxapp.domain;
 
 public class Selection {
 
