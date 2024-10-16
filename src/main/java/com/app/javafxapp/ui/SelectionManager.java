@@ -39,5 +39,6 @@ public class SelectionManager  extends Pane {
         hbox.prefWidthProperty().bind(widthProperty());
 
         getChildren().add(hbox);
+        setVisible(false);
     }
 }

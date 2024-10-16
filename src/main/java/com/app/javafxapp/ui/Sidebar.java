@@ -1,15 +1,24 @@
 package com.app.javafxapp.ui;
 
+import com.app.javafxapp.db.DataManager;
+import com.app.javafxapp.db.Selection;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -23,6 +32,7 @@ import javafx.scene.paint.Color;
 
 public class Sidebar  extends ScrollPane {
     private final ImageRenderer renderer;
+    private SelectionManager selectionManager;
 
     public int selected;
 
@@ -35,6 +45,7 @@ public class Sidebar  extends ScrollPane {
     private List<Pane> imageViews;
 
     private VBox box;
+    private String selectedDirectory;
 
     public Sidebar(ImageRenderer renderer) {
         this.renderer = renderer;
@@ -43,9 +54,22 @@ public class Sidebar  extends ScrollPane {
         selectionLabels = new ArrayList<>();
         box = new VBox();
         setContent(box);
+        renderer.setVisible(false);
+        setVisible(false);
     }
 
     void loadImages(String path) {
+        this.selectedDirectory = path;
+        List<Selection> fetched = DataManager.fetch(selectedDirectory);
+        Map<String, Boolean> fileSelectionMap =
+            fetched.stream().collect(Collectors.toMap(s -> s.getFile(), s -> s.getSelected()));
+
+        box.getChildren().clear();
+        images.clear();
+        imageViews.clear();
+        selectionLabels.clear();
+        total = selected = 0;
+
         new Thread(() -> {
             File directory = new File(path);
             List<File> files = new ArrayList<>();
@@ -80,11 +104,17 @@ public class Sidebar  extends ScrollPane {
                         Pane imagePane = new Pane();
                         imagePane.getChildren().add(imageView);
                         imagePane.getChildren().add(label);
-                        label.setBackground(new Background(new BackgroundFill(
-                            Color.DARKGRAY,
-                            CornerRadii.EMPTY,
-                            Insets.EMPTY
-                        )));
+
+                        String fileName = getFileName(file.getAbsolutePath());
+                        if(fileSelectionMap.get(fileName) != null) {
+                            updateSelectionLabel(label, fileSelectionMap.get(fileName));
+                        } else {
+                            label.setBackground(new Background(new BackgroundFill(
+                                Color.DARKGRAY,
+                                CornerRadii.EMPTY,
+                                Insets.EMPTY
+                            )));
+                        }
 
                         images.add(image);
                         imageViews.add(imagePane);
@@ -102,6 +132,9 @@ public class Sidebar  extends ScrollPane {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
+                    this.setVisible(true);
+                    renderer.setVisible(true);
+                    selectionManager.setVisible(true);
                 }
                 updateFocus(true);
             });
@@ -160,6 +193,27 @@ public class Sidebar  extends ScrollPane {
             CornerRadii.EMPTY,
             Insets.EMPTY
         )));
+        DataManager.save(selectedDirectory, getFileName(images.get(selected).getUrl()), isSelected);
         rightArrowClicked();
+    }
+
+    private void updateSelectionLabel(Button label, boolean isSelected) {
+        String s = isSelected ? "Y" : "N";
+        label.setText(s);
+        label.toFront();
+        label.setBackground(new Background(new BackgroundFill(
+            isSelected ? Color.LIGHTGREEN : Color.RED,
+            CornerRadii.EMPTY,
+            Insets.EMPTY
+        )));
+    }
+
+    public void setSelectionManager(SelectionManager selectionManager) {
+        this.selectionManager = selectionManager;
+    }
+
+    private static String getFileName(String url) {
+        String[] segments = url.split("/");
+        return segments[segments.length - 1];
     }
 }
