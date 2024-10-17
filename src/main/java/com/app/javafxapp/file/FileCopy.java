@@ -11,7 +11,7 @@ import java.util.List;
 public final class FileCopy {
     private FileCopy(){}
     public static int copySelected(String from, String to) {
-        List<Selection> fetched = DataManager.fetch(from);
+        List<Selection> fetched = DataManager.fetchSelected(from);
         int count = 0;
         for (Selection s : fetched) {
             try {

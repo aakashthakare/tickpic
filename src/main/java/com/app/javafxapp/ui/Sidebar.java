@@ -4,10 +4,8 @@ import com.app.javafxapp.db.DataManager;
 import com.app.javafxapp.domain.Selection;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -68,7 +66,7 @@ public class Sidebar  extends ScrollPane {
 
     void loadImages(String path) {
         this.selectedDirectory = path;
-        List<Selection> fetched = DataManager.fetch(selectedDirectory);
+        List<Selection> fetched = DataManager.fetchSelected(selectedDirectory);
         Map<String, Boolean> fileSelectionMap =
             fetched.stream().collect(Collectors.toMap(Selection::getFile, Selection::getSelected));
 
@@ -86,7 +84,17 @@ public class Sidebar  extends ScrollPane {
                     Platform.runLater(this::showAlert);
                     return;
                 } else {
-                    files.addAll(Arrays.asList(filesArr));
+                    for (File file : filesArr) {
+                        try {
+                            String mime = Files.probeContentType(file.toPath());
+                            if (mime == null || !mime.startsWith("image")) continue;
+                            files.add(file);
+                            total++;
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if(total == 0) Platform.runLater(this::showAlert);
                 }
             }
 
@@ -94,9 +102,6 @@ public class Sidebar  extends ScrollPane {
                 int i = 0;
                 for (File file : files) {
                     try {
-                        String mime = Files.probeContentType(file.toPath());
-                        if(mime != null && !mime.startsWith("image")) continue;
-                        total++;
                         Image image = new Image(file.toURI().toURL().toString(), 100, 100, false, false);
                         ImageView imageView = new ImageView(image);
                         imageView.setUserData(i);

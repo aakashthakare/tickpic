@@ -46,8 +46,8 @@ public class DataManager {
         }
     }
 
-    public static List<Selection> fetch(String folder) {
-        String sql = "SELECT * FROM selection where folder = ?";
+    public static List<Selection> fetchSelected(String folder) {
+        String sql = "SELECT * FROM selection where folder = ? AND isSelected = 1";
         List<Selection> fetch = new ArrayList<>();
 
         try (Connection conn = SQLiteConnection.connect();
